@@ -14,6 +14,8 @@ CONTENU
   ex1_3c.l     Ex 1.3 c)  {a,b} sans 2 occurrences consecutives du meme caractere
   ex1_3d.l     Ex 1.3 d)  {a,b} sans la sous-chaine aba
 
+  tests.txt    Commandes de test a copier-coller dans Cygwin
+
   Fichiers de test : 0.dat (ex 1.1), prog.c (ex 1.2),
                      a.txt b.txt c.txt d.txt (ex 1.3)
 
@@ -90,4 +92,5 @@ REMARQUES SUR LES AUTRES EXERCICES
 MENU DU PROGRAMME tp3_menu
 
   Choisir un numero de 1 a 8 (0 pour quitter), puis donner le nom du fichier
-  a analyser, ou appuyer sur Entree pour utiliser le fichier de test par defaut.
+  a analyser, appuyer sur Entree pour le fichier de test par defaut, ou taper k
+  pour saisir le texte au clavier (terminer par une ligne contenant un point).

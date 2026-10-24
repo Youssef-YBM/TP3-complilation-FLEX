@@ -76,18 +76,44 @@ static char *lire(FILE *f)
     return buf;
 }
 
+/* saisie au clavier : lignes jusqu'a une ligne contenant seulement un point */
+static char *lire_clavier(void)
+{
+    size_t n = 0, cap = 1024;
+    char *buf = malloc(cap), l[512];
+    printf("Tapez le texte (une ligne contenant seulement '.' pour terminer) :\n");
+    while (fgets(l, sizeof l, stdin)) {
+        size_t m;
+        l[strcspn(l, "\r\n")] = 0;
+        if (strcmp(l, ".") == 0)
+            break;
+        m = strlen(l);
+        while (n + m + 2 >= cap) buf = realloc(buf, cap *= 2);
+        memcpy(buf + n, l, m);
+        n += m;
+        buf[n++] = '\n';
+    }
+    buf[n] = 0;
+    return buf;
+}
+
 static void analyser(int cond, const char *nom)
 {
-    FILE *f = fopen(nom, "r");
     char *buf;
     YY_BUFFER_STATE st;
 
-    if (!f) {
-        perror(nom);
-        return;
+    if (!nom) {
+        buf = lire_clavier();
+        nom = "clavier";
+    } else {
+        FILE *f = fopen(nom, "r");
+        if (!f) {
+            perror(nom);
+            return;
+        }
+        buf = lire(f);
+        fclose(f);
     }
-    buf = lire(f);
-    fclose(f);
 
     nb_comm = nb_lignes = 0;
     printf("\n----- resultat (%s) -----\n", nom);
@@ -136,11 +162,14 @@ int main(void)
             printf("Choix invalide.\n");
             continue;
         }
-        printf("Fichier a analyser (Entree = %s) : ", ex[choix - 1].defaut);
+        printf("Fichier a analyser (Entree = %s, k = saisie au clavier) : ", ex[choix - 1].defaut);
         if (!fgets(ligne, sizeof ligne, stdin))
             break;
         ligne[strcspn(ligne, "\r\n")] = 0;
-        analyser(ex[choix - 1].cond, ligne[0] ? ligne : ex[choix - 1].defaut);
+        if (strcmp(ligne, "k") == 0)
+            analyser(ex[choix - 1].cond, NULL);
+        else
+            analyser(ex[choix - 1].cond, ligne[0] ? ligne : ex[choix - 1].defaut);
     }
     return 0;
 }

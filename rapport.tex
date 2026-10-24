@@ -74,34 +74,16 @@
 % ---------- Page de titre ----------
 \begin{document}
 
-\begin{titlepage}
-\begin{tikzpicture}[remember picture,overlay]
-  \fill[navy] (current page.north west) rectangle ([yshift=-8.5cm]current page.north east);
-  \fill[azur] ([yshift=-8.5cm]current page.north west) rectangle ([yshift=-8.9cm]current page.north east);
+\noindent
+\begin{tikzpicture}
+  \node[fill=navy, text=white, inner xsep=14pt, inner ysep=12pt, text width=\dimexpr\textwidth-28pt\relax, align=left, rounded corners=3pt] {%
+    {\Large\scshape Compilation -- Travaux pratiques}\\[4pt]
+    {\fontsize{22}{26}\selectfont\bfseries TP3 : Initiation à Flex}\\[2pt]
+    {\large Générateur d'analyseurs lexicaux}\\[8pt]
+    {\bfseries ERRAMI YOUSSEF} \hfill ILISI 2 -- 2025/2026
+  };
 \end{tikzpicture}
-
-\vspace*{1.2cm}
-\begin{center}
-  {\color{white}\Large\scshape Compilation -- Travaux pratiques}\\[1.2cm]
-  {\color{white}\fontsize{30}{36}\selectfont\bfseries TP3}\\[0.5cm]
-  {\color{white}\Huge\bfseries Initiation à Flex}\\[0.5cm]
-  {\color{white}\Large Générateur d'analyseurs lexicaux}
-\end{center}
-
-\vspace*{5.2cm}
-\begin{center}
-  \begin{tabular}{rl}
-    \textbf{\color{navy}Réalisé par :} & Prénom NOM \\
-    \textbf{\color{navy}Filière :}     & ILISI 2 \\
-    \textbf{\color{navy}Module :}      & Compilation \\
-    \textbf{\color{navy}Année :}       & 2025 -- 2026 \\
-  \end{tabular}
-\end{center}
-\vfill
-\end{titlepage}
-
-\tableofcontents
-\newpage
+\vspace{1em}
 
 % =====================================================================
 \section{Introduction}

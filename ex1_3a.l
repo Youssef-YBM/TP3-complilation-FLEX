@@ -25,7 +25,7 @@ static char *lire(FILE *f)
 %%
 \n                      { ECHO; }
 [ \t]                   { ECHO; }
-^{L}*[aA]{L}*[eE]{L}*[iI]{L}*[oO]{L}*[uU]{L}*$    { printf("  -> ACCEPTE"); }
+^{L}*[aA]{L}*[eE]{L}*[iI]{L}*[oO]{L}*[uU]{L}*$    { printf("%s  -> ACCEPTE", yytext); }
 .                       { printf("<?%c>", yytext[0]); }
 %%
 int main(int argc, char **argv)

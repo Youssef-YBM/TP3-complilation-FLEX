@@ -25,7 +25,7 @@ static char *lire(FILE *f)
 %%
 \n                      { ECHO; }
 [ \t]                   { ECHO; }
-^((ab)+a?|(ba)+b?|a|b)$    { printf("  -> ACCEPTE"); }
+^((ab)+a?|(ba)+b?|a|b)$    { printf("%s  -> ACCEPTE", yytext); }
 .                       { printf("<?%c>", yytext[0]); }
 %%
 int main(int argc, char **argv)

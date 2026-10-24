@@ -7,7 +7,7 @@ int nb_lignes = 0;   /* lignes contenues dans les commentaires */
 %}
 
 %%
-\"([^"\\n]|\.)*\"    { ECHO; /* chaine C : on ne touche pas a son contenu */ }
+\"([^"\\\n]|\\.)*\"    { ECHO; /* chaine C : on ne touche pas a son contenu */ }
 "/*"                   { BEGIN(COMMENT); nb_comm++; }
 <COMMENT>"*/"          { BEGIN(INITIAL); }
 <COMMENT>\n            { nb_lignes++; }

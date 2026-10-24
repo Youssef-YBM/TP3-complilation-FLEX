@@ -1,4 +1,86 @@
-cd "C:\Users\youss\OneDrive\Documents\ILISI 2\2026 Compilation\TPs\TP3"
-win_flex -o tp3_menu.c tp3_menu.l
-gcc tp3_menu.c -o tp3_menu.exe
-.\tp3_menu.exe
+COMMANDES DE COMPILATION ET D'EXECUTION - TP3
+=============================================
+
+0. PREPARATION (Cygwin)
+
+Paquets a installer avec le setup de Cygwin : flex et gcc-core.
+Verification :
+    flex --version
+    gcc --version
+
+Se placer dans le dossier du TP :
+    cd "/cygdrive/c/Users/youss/OneDrive/Documents/ILISI 2/2026 Compilation/TPs/TP3"
+
+
+1. PROGRAMME AVEC MENU (tous les exercices)
+
+Compilation :
+    flex tp3_menu.l
+    gcc lex.yy.c -o tp3_menu
+
+Execution :
+    ./tp3_menu
+
+Dans le menu : numero de 1 a 8 (0 pour quitter), puis
+    Entree = fichier de test par defaut
+    nom    = autre fichier
+    k      = saisie au clavier (finir par une ligne contenant seulement un point)
+
+
+2. EXERCICES SEPARES
+
+Ex 1.1 a)
+    flex ex1_1a.l
+    gcc lex.yy.c -o ex1_1a
+    ./ex1_1a < 0.dat
+
+Ex 1.1 b1)
+    flex ex1_1b1.l
+    gcc lex.yy.c -o ex1_1b1
+    ./ex1_1b1 < 0.dat
+
+Ex 1.1 b2)
+    flex ex1_1b2.l
+    gcc lex.yy.c -o ex1_1b2
+    ./ex1_1b2 < 0.dat
+
+Ex 1.2
+    flex ex1_2.l
+    gcc lex.yy.c -o ex1_2
+    ./ex1_2 < prog.c
+
+Ex 1.3 a)
+    flex ex1_3a.l
+    gcc lex.yy.c -o ex1_3a
+    ./ex1_3a a.txt
+
+Ex 1.3 b)
+    flex ex1_3b.l
+    gcc lex.yy.c -o ex1_3b
+    ./ex1_3b b.txt
+
+Ex 1.3 c)
+    flex ex1_3c.l
+    gcc lex.yy.c -o ex1_3c
+    ./ex1_3c c.txt
+
+Ex 1.3 d)
+    flex ex1_3d.l
+    gcc lex.yy.c -o ex1_3d
+    ./ex1_3d d.txt
+
+
+3. TOUT COMPILER D'UN COUP
+
+    for f in ex1_1a ex1_1b1 ex1_1b2 ex1_2 ex1_3a ex1_3b ex1_3c ex1_3d; do flex -o $f.c $f.l && gcc $f.c -o $f; done
+    flex -o tp3_menu.c tp3_menu.l && gcc tp3_menu.c -o tp3_menu
+
+
+4. REMARQUES
+
+- Pas besoin de l'option -ll : chaque fichier .l contient son propre main().
+- Les exercices 1.3 acceptent aussi l'entree standard : ./ex1_3a < a.txt
+- Un seul mot par ligne pour l'exercice 1.3.
+- Sous PowerShell (Windows), la commande est win_flex au lieu de flex, et
+  pour lire un fichier : Get-Content 0.dat | .\ex1_1a.exe
+- Tests a copier-coller : voir tests.txt

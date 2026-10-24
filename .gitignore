@@ -1,0 +1,19 @@
+# notes de compilation et tests
+compilation.txt
+tests.txt
+
+# fichiers generes par flex / gcc
+lex.yy.c
+ex1_*.c
+tp3_menu.c
+*.exe
+*.o
+ex1_1a
+ex1_1b1
+ex1_1b2
+ex1_2
+ex1_3a
+ex1_3b
+ex1_3c
+ex1_3d
+tp3_menu

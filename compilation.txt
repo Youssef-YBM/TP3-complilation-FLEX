@@ -1,0 +1,4 @@
+cd "C:\Users\youss\OneDrive\Documents\ILISI 2\2026 Compilation\TPs\TP3"
+win_flex -o tp3_menu.c tp3_menu.l
+gcc tp3_menu.c -o tp3_menu.exe
+.\tp3_menu.exe

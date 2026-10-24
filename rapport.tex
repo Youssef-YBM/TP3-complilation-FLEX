@@ -50,7 +50,9 @@
   basicstyle=\ttfamily\small,
   breaklines=true,
   columns=fullflexible,
-  showstringspaces=false
+  showstringspaces=false,
+  literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {â}{{\^a}}1 {ù}{{\`u}}1
+           {ô}{{\^o}}1 {î}{{\^i}}1 {ç}{{\c c}}1 {É}{{\'E}}1 {À}{{\`A}}1
 }
 \newtcblisting{code}{
   listing only,
@@ -59,7 +61,7 @@
   left=6pt, right=6pt, top=3pt, bottom=3pt,
   listing options={basicstyle=\ttfamily\small}
 }
-\newcommand{\code}[1]{\lstinline[basicstyle=\ttfamily\small\color{navy}]|#1|}
+\newcommand{\code}[1]{\texttt{\color{navy}\detokenize{#1}}}
 
 % ---------- Encadrés ----------
 \newtcolorbox{idee}[1][Idée]{

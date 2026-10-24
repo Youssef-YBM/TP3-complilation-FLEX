@@ -1,0 +1,192 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{gray!8},
+  frame=single,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\title{TP3 de compilation\\Initiation à Flex, générateur d'analyseur lexical}
+\author{Nom Prénom -- ILISI 2}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Principe de Flex}
+
+Un fichier Flex (\texttt{.l}) a trois parties séparées par \texttt{\%\%} :
+\begin{lstlisting}
+definitions (options, macros, conditions de depart, code C %{ ... %})
+%%
+regles :   expression_reguliere    { action en C }
+%%
+code C (fonction main, fonctions utilitaires)
+\end{lstlisting}
+
+Flex transforme les expressions régulières en un automate fini (fichier \texttt{lex.yy.c}).
+Le fonctionnement de \texttt{yylex()} repose sur deux règles :
+\begin{itemize}
+  \item \textbf{plus longue correspondance} : on choisit la règle qui reconnaît le texte le plus long ;
+  \item \textbf{priorité} : à longueur égale, la règle écrite en premier gagne.
+\end{itemize}
+Le texte reconnu est dans \texttt{yytext}. Tout caractère non reconnu est recopié
+tel quel (règle par défaut \texttt{ECHO}).
+
+\paragraph{Compilation.}
+\begin{lstlisting}[language=bash]
+flex exercice.l
+gcc lex.yy.c -o exercice
+./exercice < fichier.txt
+\end{lstlisting}
+
+\section{Exercice 1.1 : programme source d'un langage simple}
+
+\subsection{a) Reconnaissance de symboles}
+
+\begin{lstlisting}
+[a-zA-Z][a-zA-Z0-9]*    { printf("<%s> ", yytext); }
+\end{lstlisting}
+
+\textbf{Logique.} Un symbole commence par une lettre, suivie de zéro ou plusieurs
+lettres ou chiffres. Pour \texttt{for( i=0; i < 10; i++ )}, on obtient
+\texttt{<for>( <i>=0; <i> < 10; <i>++ )}.
+Les nombres (\texttt{10}, \texttt{12.3}, \texttt{.0}) ne commencent pas par une lettre ;
+les ponctuations et espaces non plus. Ils sont donc recopiés sans changement par la règle par défaut.
+Le mot-clé \texttt{for} est traité comme un symbole ordinaire.
+
+\subsection{b1) Mots-clés, opérateurs, symboles}
+
+\begin{lstlisting}
+for|while|if|else|do|int|float|...  { printf("<MOT-CLE:%s> ", yytext); }
+[a-zA-Z][a-zA-Z0-9]*                { printf("<SYMBOLE:%s> ", yytext); }
+"++"|"--"|"=="|"<="|">="|"&&"|...   { printf("<OPERATEUR:%s> ", yytext); }
+[-+*/%=<>!&|^~]                     { printf("<OPERATEUR:%s> ", yytext); }
+[(){}\[\];,.:]                      { printf("<OPERATEUR:%s> ", yytext); }
+\end{lstlisting}
+
+\textbf{Logique.} Pour le mot \texttt{for}, la règle des mots-clés et celle des symboles
+reconnaissent la même longueur. Par priorité, la règle des mots-clés doit donc être
+\emph{écrite avant}. Pour \texttt{++}, la règle à deux caractères est plus longue que deux
+fois la règle \texttt{+} : \texttt{++} est reconnu comme un seul opérateur.
+
+\subsection{b2) Valeurs numériques}
+
+\begin{lstlisting}
+EXP     [eE][-+]?[0-9]+
+%%
+[0-9]+                                                  { printf("<ENTIER:%s> ", yytext); }
+[0-9]+"."[0-9]*({EXP})?|"."[0-9]+({EXP})?|[0-9]+{EXP}   { printf("<FLOTTANT:%s> ", yytext); }
+\end{lstlisting}
+
+\textbf{Logique.} Un entier est une suite de chiffres. Un flottant a une partie
+décimale (\texttt{12.3}, \texttt{12.}, \texttt{.0}) et éventuellement un exposant
+(\texttt{1e5}). Pour \texttt{12.3}, la règle flottant (4 caractères) l'emporte sur
+l'entier \texttt{12} (2 caractères) : c'est la plus longue correspondance.
+
+\section{Exercice 1.2 : suppression des commentaires C}
+
+\begin{lstlisting}
+%x COMMENT
+%{ int nb_comm = 0, nb_lignes = 0; %}
+%%
+\"([^"\\\n]|\\.)*\"    { ECHO; }
+"/*"                   { BEGIN(COMMENT); nb_comm++; }
+<COMMENT>"*/"          { BEGIN(INITIAL); }
+<COMMENT>\n            { nb_lignes++; }
+<COMMENT>.             { /* ignore */ }
+<COMMENT><<EOF>>       { fprintf(stderr, "commentaire non termine\n"); return 0; }
+\end{lstlisting}
+
+\textbf{Logique.} Un commentaire peut s'étendre sur plusieurs lignes : une seule
+expression régulière est possible, mais on utilise ici une \emph{condition de départ}
+(\texttt{\%x COMMENT}), plus lisible.
+\begin{itemize}
+  \item En état normal, le texte est recopié. À la lecture de \texttt{/*}, on passe dans l'état \texttt{COMMENT}.
+  \item Dans cet état, tout est ignoré (aucune sortie), sauf \texttt{*/} qui ramène à l'état normal.
+  \item \textbf{Variables dans les actions} : \texttt{nb\_comm} et \texttt{nb\_lignes} sont des
+        variables C globales modifiées dans les actions et affichées à la fin dans \texttt{main}.
+  \item La règle des chaînes \texttt{"..."} protège un \texttt{/*} qui serait à l'intérieur d'un texte.
+  \item \texttt{<<EOF>>} dans l'état \texttt{COMMENT} signale un commentaire jamais fermé.
+\end{itemize}
+
+\section{Exercice 1.3 : expressions régulières}
+
+Hypothèse : un mot par ligne. Les délimiteurs (espace, tabulation, fin de ligne) sont
+simplement recopiés ; une règle « attrape-tout » (\texttt{.}) signale chaque caractère
+d'un mot rejeté.
+Chaque règle est \emph{ancrée} avec \texttt{\string^} (début de ligne) et \texttt{\$} (fin de ligne),
+pour que le mot entier soit vérifié et non un morceau de mot.
+
+Structure commune :
+\begin{lstlisting}
+\n                  { ECHO; }
+[ \t]               { ECHO; }
+^ ER $              { printf("%s  -> ACCEPTE", yytext); }
+.                   { printf("<?%c>", yytext[0]); }
+\end{lstlisting}
+
+\subsection{a) Les 5 voyelles dans l'ordre}
+\begin{lstlisting}
+^{L}*[aA]{L}*[eE]{L}*[iI]{L}*[oO]{L}*[uU]{L}*$       (L = [a-zA-Z])
+\end{lstlisting}
+\textbf{Logique.} On autorise n'importe quelles lettres entre les voyelles :
+\texttt{a}, puis \texttt{e}, puis \texttt{i}, \texttt{o}, \texttt{u}, dans cet ordre.
+Exemples acceptés : \texttt{abstemious}, \texttt{aeiou}. Rejeté : \texttt{sequoia}.
+
+\subsection{b) Commence ou finit par \texttt{a}}
+\begin{lstlisting}
+^(a[ab]*|[ab]*a)$
+\end{lstlisting}
+\textbf{Logique.} Deux cas reliés par \texttt{|} : \texttt{a} suivi de n'importe quoi,
+ou n'importe quoi suivi de \texttt{a}.
+
+\subsection{c) Pas deux caractères identiques consécutifs}
+\begin{lstlisting}
+^((ab)+a?|(ba)+b?|a|b)$
+\end{lstlisting}
+\textbf{Logique.} Si deux lettres consécutives sont toujours différentes, le mot
+\emph{alterne} : \texttt{abab...} ou \texttt{baba...}. On écrit donc ces deux familles
+(avec une lettre finale optionnelle), plus les mots d'une lettre.
+
+\subsection{d) Ne contient pas la sous-chaîne \texttt{aba}}
+\begin{lstlisting}
+^(b+)?(a+bb+)*(a+b?)?$
+\end{lstlisting}
+\textbf{Logique.} \texttt{aba} signifie qu'un seul \texttt{b} est enfermé entre deux
+\texttt{a}. Il faut donc que tout bloc de \texttt{b} situé entre deux blocs de \texttt{a}
+contienne au moins deux \texttt{b}. Le mot se décompose en :
+\begin{enumerate}
+  \item des \texttt{b} au début (\texttt{(b+)?}) ;
+  \item des groupes « bloc de a puis au moins deux b » (\texttt{(a+bb+)*}) ;
+  \item un dernier bloc de \texttt{a}, éventuellement suivi d'un seul \texttt{b} en fin de mot (\texttt{(a+b?)?}).
+\end{enumerate}
+Accepté : \texttt{abba}, \texttt{bbaa}. Rejeté : \texttt{aba}, \texttt{abab}, \texttt{baba}.
+
+\section{Programme avec menu}
+
+Le fichier \texttt{tp3\_menu.l} regroupe tous les exercices dans un seul analyseur.
+Chaque exercice correspond à une condition de départ (\texttt{\%x E11A E11B1 E11B2 E12 E13A\dots}),
+et les règles sont préfixées par la condition, par exemple \texttt{<E13B>\string^(a[ab]*|[ab]*a)\$}.
+Dans \texttt{main}, un menu lit le choix de l'utilisateur, charge le texte (fichier ou saisie clavier),
+l'envoie à l'analyseur avec \texttt{yy\_scan\_string}, active la condition par \texttt{BEGIN(...)}
+puis appelle \texttt{yylex()}.
+
+\section{Conclusion}
+
+Ce TP montre qu'avec Flex, une analyse lexicale se réduit à écrire des expressions
+régulières associées à des actions C. Les trois notions clés sont : la plus longue
+correspondance, la priorité de l'ordre des règles, et les conditions de départ
+pour les analyses dépendant du contexte (commentaires).
+
+\end{document}

@@ -194,8 +194,8 @@ avec la même longueur. C'est la priorité à l'ordre qui tranche : la règle de
 deux \texttt{+}, parce que la règle à deux caractères donne la plus longue correspondance.
 \end{idee}
 
-Sur \code{for( i=0; i < 10; i++ )}, on obtient :
-\code{<MOT-CLE:for> <OPERATEUR:(> <SYMBOLE:i> <OPERATEUR:=> 0 ...}. À ce stade les nombres sont
+Sur \verb!for( i=0; i < 10; i++ )!, on obtient :
+\verb!<MOT-CLE:for> <OPERATEUR:(> <SYMBOLE:i> <OPERATEUR:=> 0 ...!. À ce stade les nombres sont
 encore recopiés sans traitement.
 
 \subsection{b2) Valeurs numériques}
@@ -313,9 +313,9 @@ C'est l'expression la moins évidente. Interdire \texttt{aba} revient à interdi
 \texttt{b} entre deux \texttt{a}. Donc tout bloc de \texttt{b} placé entre deux blocs de \texttt{a}
 doit en contenir au moins deux. Le mot se découpe ainsi :
 \begin{enumerate}[leftmargin=1.5em]
-  \item des \texttt{b} au début, éventuellement : \code{(b+)?} ;
-  \item des groupes « un bloc de \texttt{a}, puis au moins deux \texttt{b} » : \code{(a+bb+)*} ;
-  \item un dernier bloc de \texttt{a}, éventuellement suivi d'un seul \texttt{b} (permis car rien ne suit) : \code{(a+b?)?}.
+  \item des \texttt{b} au début, éventuellement : \verb!(b+)?! ;
+  \item des groupes « un bloc de \texttt{a}, puis au moins deux \texttt{b} » : \verb!(a+bb+)*! ;
+  \item un dernier bloc de \texttt{a}, éventuellement suivi d'un seul \texttt{b} (permis car rien ne suit) : \verb!(a+b?)?!.
 \end{enumerate}
 
 \subsection{Résultats des tests}
@@ -343,14 +343,14 @@ la règle attrape-tout signale chaque caractère.
 Pour faciliter le test final, \texttt{tp3\_menu.l} regroupe tous les exercices dans un seul
 analyseur. Chaque exercice est une condition de départ (\texttt{E11A}, \texttt{E11B1},
 \texttt{E11B2}, \texttt{E12}, \texttt{E13A} à \texttt{E13D}) et ses règles sont préfixées par
-cette condition, par exemple \code{<E13B>^(a[ab]*|[ab]*a)$}.
+cette condition, par exemple \verb!<E13B>^(a[ab]*|[ab]*a)$!.
 
 Dans \texttt{main}, le programme :
 \begin{enumerate}[leftmargin=1.5em]
   \item affiche le menu et lit le choix de l'utilisateur ;
   \item charge le texte, soit depuis un fichier, soit depuis une saisie au clavier ;
-  \item confie ce texte à l'analyseur avec \code{yy_scan_string} ;
-  \item active l'exercice choisi avec \code{BEGIN(condition)}, puis appelle \code{yylex()}.
+  \item confie ce texte à l'analyseur avec \verb!yy_scan_string! ;
+  \item active l'exercice choisi avec \verb!BEGIN(condition)!, puis appelle \verb!yylex()!.
 \end{enumerate}
 
 Le texte est nettoyé avant l'analyse (suppression des \texttt{\textbackslash r} des fichiers Windows,

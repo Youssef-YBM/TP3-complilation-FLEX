@@ -633,19 +633,30 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "tp3_menu.l"
-/* TP3 Compilation - tous les exercices dans un seul analyseur, avec menu.
- * Chaque exercice correspond a une condition de depart (%x).
+/* TP3 Compilation : tous les exercices dans un seul analyseur, avec menu.
+ *
+ * Principe : chaque exercice correspond à une condition de départ (%x).
+ * Une règle préfixée par <E13B> n'est active que lorsque l'analyseur est
+ * dans l'état E13B. Le menu (dans main) choisit l'état avec BEGIN(...).
+ */
+/* Pas de yywrap : l'analyse s'arrête à la fin du texte */
+/* Conditions de départ exclusives (une par exercice) :
+ *   E11A  = ex 1.1 a)     E11B1 = ex 1.1 b1)    E11B2 = ex 1.1 b2)
+ *   E12   = ex 1.2 (texte normal)   E12C = ex 1.2 (à l'intérieur d'un commentaire)
+ *   E13A..E13D = ex 1.3 a) à d)
  */
 
-#line 13 "tp3_menu.l"
+/* Macros (abréviations d'expressions régulières) */
+#line 24 "tp3_menu.l"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int nb_comm = 0;     /* ex 1.2 : commentaires supprimes */
-int nb_lignes = 0;   /* ex 1.2 : lignes contenues dans les commentaires */
-#line 647 "tp3_menu.c"
-#line 648 "tp3_menu.c"
+/* Variables C utilisées dans les actions de l'exercice 1.2 */
+int nb_comm = 0;     /* nombre de commentaires supprimés */
+int nb_lignes = 0;   /* nombre de sauts de ligne à l'intérieur des commentaires */
+#line 658 "tp3_menu.c"
+#line 659 "tp3_menu.c"
 
 #define INITIAL 0
 #define E11A 1
@@ -874,12 +885,13 @@ YY_DECL
 		}
 
 	{
-#line 21 "tp3_menu.l"
+#line 33 "tp3_menu.l"
 
 
-#line 24 "tp3_menu.l"
- /* ---------- Exercice 1.1 a) ---------- */
-#line 882 "tp3_menu.c"
+#line 36 "tp3_menu.l"
+ /* ---------- Exercice 1.1 a) : symboles ---------- */
+ /* lettre suivie de lettres/chiffres, affichée entre < > */
+#line 894 "tp3_menu.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -939,157 +951,175 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 25 "tp3_menu.l"
+#line 38 "tp3_menu.l"
 { printf("<%s> ", yytext); }
 	YY_BREAK
-/* ---------- Exercice 1.1 b1) ---------- */
+/* ---------- Exercice 1.1 b1) : mots-clés, symboles, opérateurs ---------- */
+/* Les mots-clés d'abord : à longueur égale, la première règle gagne */
 case 2:
 YY_RULE_SETUP
-#line 28 "tp3_menu.l"
+#line 42 "tp3_menu.l"
 { printf("<MOT-CLE:%s> ", yytext); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 29 "tp3_menu.l"
+#line 43 "tp3_menu.l"
 { printf("<SYMBOLE:%s> ", yytext); }
 	YY_BREAK
+/* opérateurs à deux caractères (plus longs, donc prioritaires) */
 case 4:
 YY_RULE_SETUP
-#line 30 "tp3_menu.l"
+#line 45 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
+/* opérateurs à un caractère */
 case 5:
 YY_RULE_SETUP
-#line 31 "tp3_menu.l"
+#line 47 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
+/* caractères réservés : parenthèses, accolades, crochets, ponctuation */
 case 6:
 YY_RULE_SETUP
-#line 32 "tp3_menu.l"
+#line 49 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
-/* ---------- Exercice 1.1 b2) ---------- */
+/* ---------- Exercice 1.1 b2) : + valeurs numériques ---------- */
 case 7:
 YY_RULE_SETUP
-#line 35 "tp3_menu.l"
+#line 52 "tp3_menu.l"
 { printf("<MOT-CLE:%s> ", yytext); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 36 "tp3_menu.l"
+#line 53 "tp3_menu.l"
 { printf("<SYMBOLE:%s> ", yytext); }
 	YY_BREAK
+/* entier : suite de chiffres */
 case 9:
 YY_RULE_SETUP
-#line 37 "tp3_menu.l"
+#line 55 "tp3_menu.l"
 { printf("<ENTIER:%s> ", yytext); }
 	YY_BREAK
+/* flottant : 12.3   12.   .5   1e5   2.5e-3 (plus long que l'entier, donc prioritaire) */
 case 10:
 YY_RULE_SETUP
-#line 38 "tp3_menu.l"
+#line 57 "tp3_menu.l"
 { printf("<FLOTTANT:%s> ", yytext); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 39 "tp3_menu.l"
+#line 58 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 40 "tp3_menu.l"
+#line 59 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 41 "tp3_menu.l"
+#line 60 "tp3_menu.l"
 { printf("<OPERATEUR:%s> ", yytext); }
 	YY_BREAK
 /* ---------- Exercice 1.2 : suppression des commentaires ---------- */
+/* chaîne C : recopiée sans y toucher (un faux commentaire dedans reste intact) */
 case 14:
 YY_RULE_SETUP
-#line 44 "tp3_menu.l"
-{ ECHO; /* chaine C : contenu intact */ }
+#line 64 "tp3_menu.l"
+{ ECHO; }
 	YY_BREAK
+/* début de commentaire : on passe dans l'état E12C et on compte */
 case 15:
 YY_RULE_SETUP
-#line 45 "tp3_menu.l"
+#line 66 "tp3_menu.l"
 { BEGIN(E12C); nb_comm++; }
 	YY_BREAK
+/* fin de commentaire : retour à l'état normal */
 case 16:
 YY_RULE_SETUP
-#line 46 "tp3_menu.l"
+#line 68 "tp3_menu.l"
 { BEGIN(E12); }
 	YY_BREAK
+/* dans un commentaire : on compte les lignes, le reste est ignoré */
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 47 "tp3_menu.l"
+#line 70 "tp3_menu.l"
 { nb_lignes++; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 48 "tp3_menu.l"
-{ /* ignore */ }
+#line 71 "tp3_menu.l"
+{ /* on ignore le caractère */ }
 	YY_BREAK
+/* fichier fini avant la fin du commentaire : erreur */
 case YY_STATE_EOF(E12C):
-#line 49 "tp3_menu.l"
+#line 73 "tp3_menu.l"
 { fprintf(stderr, "Erreur : commentaire non termine\n"); return 0; }
 	YY_BREAK
 /* ---------- Exercice 1.3 : un mot par ligne ---------- */
+/* délimiteurs : recopiés tels quels */
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 52 "tp3_menu.l"
+#line 77 "tp3_menu.l"
 { ECHO; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 53 "tp3_menu.l"
+#line 78 "tp3_menu.l"
 { ECHO; }
 	YY_BREAK
+/* ^ = début de ligne, $ = fin de ligne : on vérifie le mot entier */
+/* a) les 5 voyelles dans l'ordre, avec des lettres quelconques entre elles */
 case 21:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 55 "tp3_menu.l"
+#line 82 "tp3_menu.l"
 { printf("%s  -> ACCEPTE", yytext); }
 	YY_BREAK
+/* b) commence ou finit par a */
 case 22:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 56 "tp3_menu.l"
+#line 84 "tp3_menu.l"
 { printf("%s  -> ACCEPTE", yytext); }
 	YY_BREAK
+/* c) pas deux lettres identiques de suite : le mot alterne (abab... ou baba...) */
 case 23:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 57 "tp3_menu.l"
+#line 86 "tp3_menu.l"
 { printf("%s  -> ACCEPTE", yytext); }
 	YY_BREAK
+/* d) pas de sous-chaîne aba : tout bloc de b entre deux blocs de a contient au moins 2 b */
 case 24:
 *yy_cp = (yy_hold_char); /* undo effects of setting up yytext */
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 58 "tp3_menu.l"
+#line 88 "tp3_menu.l"
 { printf("%s  -> ACCEPTE", yytext); }
 	YY_BREAK
+/* règle attrape-tout : signale chaque caractère d'un mot non reconnu */
 case 25:
 YY_RULE_SETUP
-#line 60 "tp3_menu.l"
+#line 91 "tp3_menu.l"
 { printf("<?%c>", yytext[0]); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 62 "tp3_menu.l"
+#line 93 "tp3_menu.l"
 ECHO;
 	YY_BREAK
-#line 1092 "tp3_menu.c"
+#line 1122 "tp3_menu.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(E11A):
 case YY_STATE_EOF(E11B1):
@@ -2105,10 +2135,13 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 62 "tp3_menu.l"
+#line 93 "tp3_menu.l"
 
 
-/* lit tout le fichier : supprime les \r (fichiers Windows) et garantit un \n final */
+/* Lit tout le fichier en mémoire :
+ *  - supprime les \r (fichiers créés sous Windows)
+ *  - garantit qu'il y a un \n à la fin (nécessaire pour les règles ancrées par $)
+ */
 static char *lire(FILE *f)
 {
     size_t n = 0, cap = 1024;
@@ -2116,7 +2149,7 @@ static char *lire(FILE *f)
     int c;
     while ((c = fgetc(f)) != EOF) {
         if (c == '\r') continue;
-        if (n + 2 >= cap) buf = realloc(buf, cap *= 2);
+        if (n + 2 >= cap) buf = realloc(buf, cap *= 2);   /* agrandit le tampon si besoin */
         buf[n++] = c;
     }
     if (n == 0 || buf[n - 1] != '\n') buf[n++] = '\n';
@@ -2124,7 +2157,7 @@ static char *lire(FILE *f)
     return buf;
 }
 
-/* saisie au clavier : lignes jusqu'a une ligne contenant seulement un point */
+/* Saisie au clavier : on lit des lignes jusqu'à une ligne contenant seulement un point */
 static char *lire_clavier(void)
 {
     size_t n = 0, cap = 1024;
@@ -2132,9 +2165,9 @@ static char *lire_clavier(void)
     printf("Tapez le texte (une ligne contenant seulement '.' pour terminer) :\n");
     while (fgets(l, sizeof l, stdin)) {
         size_t m;
-        l[strcspn(l, "\r\n")] = 0;
+        l[strcspn(l, "\r\n")] = 0;          /* retire le retour à la ligne */
         if (strcmp(l, ".") == 0)
-            break;
+            break;                          /* fin de la saisie */
         m = strlen(l);
         while (n + m + 2 >= cap) buf = realloc(buf, cap *= 2);
         memcpy(buf + n, l, m);
@@ -2145,6 +2178,10 @@ static char *lire_clavier(void)
     return buf;
 }
 
+/* Analyse un texte avec l'exercice choisi.
+ *   cond : condition de départ (l'exercice à exécuter)
+ *   nom  : nom du fichier à lire, ou NULL pour une saisie au clavier
+ */
 static void analyser(int cond, const char *nom)
 {
     char *buf;
@@ -2156,17 +2193,17 @@ static void analyser(int cond, const char *nom)
     } else {
         FILE *f = fopen(nom, "r");
         if (!f) {
-            perror(nom);
+            perror(nom);                    /* fichier introuvable */
             return;
         }
         buf = lire(f);
         fclose(f);
     }
 
-    nb_comm = nb_lignes = 0;
+    nb_comm = nb_lignes = 0;                /* remise à zéro des compteurs de l'ex 1.2 */
     printf("\n----- resultat (%s) -----\n", nom);
-    st = yy_scan_string(buf);
-    BEGIN(cond);
+    st = yy_scan_string(buf);               /* l'analyseur lit la chaîne en mémoire */
+    BEGIN(cond);                            /* active les règles de l'exercice choisi */
     yylex();
     yy_delete_buffer(st);
     free(buf);
@@ -2176,8 +2213,10 @@ static void analyser(int cond, const char *nom)
     printf("\n----- fin -----\n");
 }
 
+/* Menu principal */
 int main(void)
 {
+    /* Tableau des exercices : titre affiché, condition de départ, fichier par défaut */
     static const struct {
         const char *titre;
         int cond;
@@ -2196,13 +2235,14 @@ int main(void)
     int i, choix;
 
     for (;;) {
+        /* Affichage du menu */
         printf("\n===== TP3 - MENU =====\n");
         for (i = 0; i < 8; i++)
             printf("  %d. %s\n", i + 1, ex[i].titre);
         printf("  0. Quitter\n");
         printf("Votre choix : ");
         if (!fgets(ligne, sizeof ligne, stdin))
-            break;
+            break;                          /* fin de l'entrée : on quitte */
         choix = atoi(ligne);
         if (choix == 0)
             break;
@@ -2210,6 +2250,8 @@ int main(void)
             printf("Choix invalide.\n");
             continue;
         }
+
+        /* Choix de la source du texte : fichier par défaut, autre fichier, ou clavier */
         printf("Fichier a analyser (Entree = %s, k = saisie au clavier) : ", ex[choix - 1].defaut);
         if (!fgets(ligne, sizeof ligne, stdin))
             break;

@@ -17,7 +17,7 @@ Se placer dans le dossier du TP :
 Compilation :
     flex tp3_menu.l
     gcc lex.yy.c -o tp3_menu
-
+    win_flex -o tp3_menu.c tp3_menu.l 
 Execution :
     ./tp3_menu
 

@@ -1,11 +1,22 @@
+/* Exercice 1.3 a) : mots contenant les 5 voyelles dans l'ordre (a, e, i, o, u).
+ * Hypothèse : un seul mot par ligne.
+ * Mot accepté : recopié suivi de "-> ACCEPTE".
+ * Mot rejeté  : chaque caractère est signalé par <?x> (règle attrape-tout).
+ */
+
 %option noyywrap
+
+/* Macro : une lettre quelconque */
 L   [a-zA-Z]
 
 %{
 #include <stdio.h>
 #include <stdlib.h>
 
-/* lit tout le fichier : supprime les \r (fichiers Windows) et garantit un \n final */
+/* Lit tout le fichier en mémoire :
+ *  - supprime les \r (fichiers créés sous Windows)
+ *  - garantit qu'il y a un \n à la fin (nécessaire pour la règle ancrée par $)
+ */
 static char *lire(FILE *f)
 {
     size_t n = 0, cap = 1024;
@@ -23,11 +34,20 @@ static char *lire(FILE *f)
 %}
 
 %%
+ /* Délimiteurs : on les recopie simplement */
 \n                      { ECHO; }
 [ \t]                   { ECHO; }
+
+ /* ^ = début de ligne, $ = fin de ligne : on vérifie le mot entier.
+    Des lettres quelconques sont permises entre les voyelles, qui doivent
+    apparaître dans l'ordre a, e, i, o, u. */
 ^{L}*[aA]{L}*[eE]{L}*[iI]{L}*[oO]{L}*[uU]{L}*$    { printf("%s  -> ACCEPTE", yytext); }
+
+ /* Règle attrape-tout : signale tout caractère d'un mot non reconnu */
 .                       { printf("<?%c>", yytext[0]); }
 %%
+
+/* Lit le fichier donné en argument (ou l'entrée standard) puis lance l'analyse */
 int main(int argc, char **argv)
 {
     FILE *f = (argc > 1) ? fopen(argv[1], "r") : stdin;
@@ -35,7 +55,7 @@ int main(int argc, char **argv)
     YY_BUFFER_STATE st;
     if (!f) { perror(argv[1]); return 1; }
     buf = lire(f);
-    st = yy_scan_string(buf);
+    st = yy_scan_string(buf);      /* l'analyseur lit la chaîne en mémoire */
     yylex();
     yy_delete_buffer(st);
     free(buf);
